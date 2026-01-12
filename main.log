@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.11.19)  19 NOV 2025 04:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.12)  12 JAN 2026 21:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -45,9 +45,9 @@ Language: english 2017/06/06 v3.3r English support from the babel system
 Package babel Info: Hyphen rules for 'canadian' set to \l@english
 (babel)             (\language0). Reported on input line 102.
 Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
-(babel)             (\language84). Reported on input line 105.
+(babel)             (\language45). Reported on input line 105.
 Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
-(babel)             (\language84). Reported on input line 108.
+(babel)             (\language45). Reported on input line 108.
 ))
 (/usr/share/texlive/texmf-dist/tex/generic/babel/locale/en/babel-english.tex
 Package babel Info: Importing font and identification data for english
@@ -1735,54 +1735,54 @@ Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
 Package csquotes Info: Redefining alias 'default' -> 'english'.
 LaTeX Font Info:    Trying to load font information for T1+xcmss on input line 
-22.
+40.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/t1xcmss.fd
 File: t1xcmss.fd 2021/06/22
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmssm/m/it on input line 22.
+LaTeX Font Info:    Checking defaults for OML/cmssm/m/it on input line 40.
 LaTeX Font Info:    Trying to load font information for OML+cmssm on input line
- 22.
+ 40.
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/omlcmssm.fd
 File: omlcmssm.fd 2019/04/04
 )
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OMS/cmsssy/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OMS/cmsssy/m/n on input line 40.
 LaTeX Font Info:    Trying to load font information for OMS+cmsssy on input lin
-e 22.
+e 40.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/omscmsssy.fd
 File: omscmsssy.fd 2019/04/04
 )
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OMX/cmssex/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OMX/cmssex/m/n on input line 40.
 LaTeX Font Info:    Trying to load font information for OMX+cmssex on input lin
-e 22.
+e 40.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/omxcmssex.fd
 File: omxcmssex.fd 2021/06/22
 )
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for U/xcmss/m/n on input line 22.
-LaTeX Font Info:    Trying to load font information for U+xcmss on input line 2
-2.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for U/xcmss/m/n on input line 40.
+LaTeX Font Info:    Trying to load font information for U+xcmss on input line 4
+0.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/uxcmss.fd
 File: uxcmss.fd 2021/06/22
 )
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -1854,7 +1854,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 22.
+Package hyperref Info: Link coloring ON on input line 40.
 (./main.out) (./main.out)
 \@outlinefile=\write5
 \openout5 = `main.out'.
@@ -1874,8 +1874,8 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' not found.
 
 No file main.bbl.
-Package biblatex Info: Reference section=0 on input line 22.
-Package biblatex Info: Reference segment=0 on input line 22.
+Package biblatex Info: Reference section=0 on input line 40.
+Package biblatex Info: Reference segment=0 on input line 40.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
@@ -1883,69 +1883,75 @@ Package caption Info: End \AtBeginDocument code.
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
 ick labels; missing features). Consider writing \pgfplotsset{compat=1.18} into 
 your preamble.
- on input line 22.
+ on input line 40.
 
 
 Package todonotes Warning: The length marginparwidth is less than 2cm and will 
 most likely cause issues with the appearance of inserted todonotes. The issue c
 an be solved by adding a line like \setlength {\marginparwidth }{2cm} prior to 
-loading the todonotes package. on input line 22.
+loading the todonotes package. on input line 40.
 
-LaTeX Font Info:    Redeclaring symbol font `AMSa' on input line 22.
+LaTeX Font Info:    Redeclaring symbol font `AMSa' on input line 40.
 LaTeX Font Info:    Overwriting symbol font `AMSa' in version `normal'
-(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 22.
+(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 40.
 LaTeX Font Info:    Overwriting symbol font `AMSa' in version `bold'
-(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 22.
-LaTeX Font Info:    Redeclaring symbol font `AMSb' on input line 22.
+(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 40.
+LaTeX Font Info:    Redeclaring symbol font `AMSb' on input line 40.
 LaTeX Font Info:    Overwriting symbol font `AMSb' in version `normal'
-(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 22.
+(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 40.
 LaTeX Font Info:    Overwriting symbol font `AMSb' in version `bold'
-(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 22.
+(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 40.
 Couldn't patch \deferred@thm@head!
-[1
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 4
+8.
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
+)
+LaTeX Font Info:    Trying to load font information for OT1+cmsmf on input line
+ 48.
+
+(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ot1cmsmf.fd
+File: ot1cmsmf.fd 2021/06/22
+)
+LaTeX Font Info:    Trying to load font information for U+ssmsa on input line 4
+8.
+
+(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ussmsa.fd
+File: ussmsa.fd 2019/04/04
+)
+LaTeX Font Info:    Trying to load font information for U+ssmsb on input line 4
+8.
+
+(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ussmsb.fd
+File: ussmsb.fd 2019/04/04
+)
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 48
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/jknapltx/ursfs.fd
+File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
+)
+LaTeX Font Info:    Trying to load font information for OMX+yhex on input line 
+48.
+
+(/usr/share/texlive/texmf-dist/tex/latex/yhmath/OMXyhex.fd
+File: OMXyhex.fd 
+File: OMXyhex.fd 2013/07/03 v1.1 YH's humble contribution to TeX maths (NP)
+) [1
 
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/cm-super/cm-super-t1.enc}]
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <24.88> not available
-(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 32.
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 50.
 
 (./main.toc
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <12> not available
 (Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 2.
 
-LaTeX Font Info:    Trying to load font information for OT1+cmsmf on input line
- 3.
-(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ot1cmsmf.fd
-File: ot1cmsmf.fd 2021/06/22
 )
-LaTeX Font Info:    Trying to load font information for U+ssmsa on input line 3
-.
-
-(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ussmsa.fd
-File: ussmsa.fd 2019/04/04
-)
-LaTeX Font Info:    Trying to load font information for U+ssmsb on input line 3
-.
-
-(/usr/share/texlive/texmf-dist/tex/latex/sansmathfonts/ussmsb.fd
-File: ussmsb.fd 2019/04/04
-)
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 3.
-
-
-(/usr/share/texlive/texmf-dist/tex/latex/jknapltx/ursfs.fd
-File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
-)
-LaTeX Font Info:    Trying to load font information for OMX+yhex on input line 
-3.
-
-(/usr/share/texlive/texmf-dist/tex/latex/yhmath/OMXyhex.fd
-File: OMXyhex.fd 
-File: OMXyhex.fd 2013/07/03 v1.1 YH's humble contribution to TeX maths (NP)
-))
 \tf@toc=\write6
 \openout6 = `main.toc'.
 
@@ -1954,17 +1960,20 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.35 \newpage
+l.53 \newpage
               [1
 
-] (./Chapters/1_Intro/1_Intro.tex
+] (./Chapters/0_Overview.tex) (./Chapters/1_Intro/1_Intro.tex
+[2
+
+]
 Chapter 1.
 (./Chapters/1_Intro/1_1_Imp_Defs.tex
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <17.28> not available
 (Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 1.
 
-) (./Chapters/1_Intro/1_2_Another_Section.tex) [2
+) (./Chapters/1_Intro/1_2_Another_Section.tex) [3
 
 ]
 
@@ -1975,7 +1984,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[3]) (./Chapters/2_Another Chapter/2_Another_Chapter.tex
+[4]) (./Chapters/2_Another Chapter/2_Another_Chapter.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -1984,16 +1993,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[4]
+[5]
 Chapter 2.
 (./Chapters/2_Another Chapter/2_1_Intro.tex)
-(./Chapters/2_Another Chapter/2_2_Another_Section.tex
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 3
-.
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
-File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
-)) [5
+(./Chapters/2_Another Chapter/2_2_Another_Section.tex) [6
 
 ]
 
@@ -2004,7 +2007,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[6])
+[7])
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -2013,11 +2016,11 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[7]
+[8]
 
-LaTeX Warning: Empty bibliography on input line 54.
+LaTeX Warning: Empty bibliography on input line 73.
 
-[8] 
+[9] 
 enddocument/afterlastpage: lastpage setting LastPage.
 (./main.aux)
  ***********
@@ -2029,7 +2032,7 @@ L3 programming layer <2024-01-22>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F736033BBF7E1F841B08DCDD6B4B09D8;1385.
+(rerunfilecheck)             Checksum: 1FB1B9C6BE4B80948B7B3669BFFCD549;1598.
 
 Package biblatex Warning: Please (re)run Biber on the file:
 (biblatex)                main
@@ -2040,24 +2043,24 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 56734 strings out of 474222
- 1292133 string characters out of 5748732
- 2306871 words of memory out of 5000000
- 78022 multiletter control sequences out of 15000+600000
- 576313 words of font info for 82 fonts, out of 8000000 for 9000
+ 56782 strings out of 474222
+ 1292898 string characters out of 5748733
+ 2307249 words of memory out of 5000000
+ 78055 multiletter control sequences out of 15000+600000
+ 585760 words of font info for 116 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 106i,11n,110p,752b,1897s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 106i,11n,110p,752b,1872s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/cm-super/sfss0800.pfb></usr/share/texmf/
 fonts/type1/public/cm-super/sfss1200.pfb></usr/share/texmf/fonts/type1/public/c
-m-super/sfss1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfss2074.pfb
+m-super/sfss1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfss2488.pfb
 ></usr/share/texmf/fonts/type1/public/cm-super/sfsx1200.pfb></usr/share/texmf/f
 onts/type1/public/cm-super/sfsx1728.pfb></usr/share/texmf/fonts/type1/public/cm
 -super/sfsx2488.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1200.pfb>
-
-Output written on main.pdf (9 pages, 138898 bytes).
+</usr/share/texmf/fonts/type1/public/cm-super/sftt1440.pfb>
+Output written on main.pdf (10 pages, 169693 bytes).
 PDF statistics:
- 170 PDF objects out of 1000 (max. 8388607)
- 117 compressed objects within 2 object streams
- 18 named destinations out of 1000 (max. 500000)
- 213 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 190 PDF objects out of 1000 (max. 8388607)
+ 134 compressed objects within 2 object streams
+ 20 named destinations out of 1000 (max. 500000)
+ 221 words of extra memory for PDF output out of 10000 (max. 10000000)
 

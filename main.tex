@@ -6,6 +6,7 @@
 \def\SCRIBE{Sidharth Hariharan}
 \def\UNIVERSITY{Mathematical University of Mathematics}
 \def\TERM{Spring 1857}
+\def\REPONAME{Lecture-Notes-Template-2026}
 
 \input{TeX_Setup/packages.tex}
 
@@ -15,9 +16,26 @@
 
 \input{TeX_Setup/shortcuts.tex}
 
-\title{\vspace{-2em}\COURSENUMBER: \COURSENAME}
-\author{Lecturer: \LECTURER \\ Scribe: \SCRIBE}
-\date{\UNIVERSITY\ - \TERM}
+\title{\vspace{-2em} {\huge \COURSENUMBER: \COURSENAME}}
+
+\author{
+    Lecturer: \LECTURER \\
+    Scribe: \SCRIBE
+    \\ \hfill \\
+    \UNIVERSITY\ - \TERM}
+% \author{
+% \begin{tabular}{rl}
+%     Lecturer: & \LECTURER \\
+%     Scribes: & \SCRIBE
+% \end{tabular}
+% }
+\date{
+    This version of the notes was last compiled on \today.
+    \\ \hfill \\
+    For the latest version, visit \url{https://thefundamentaltheor3m.github.io/\REPONAME/main.pdf}.
+    \\ \hfill \\
+    For comments, errors or suggestions, please raise an issue/make a pull request at \url{https://github.com/thefundamentaltheor3m/\REPONAME}.
+}
 
 \begin{document}
 
@@ -36,6 +54,7 @@
 
 \nocite{*}
 
+\input{Chapters/0_Overview.tex}
 \input{Chapters/1_Intro/1_Intro.tex}
 \input{Chapters/2_Another Chapter/2_Another_Chapter.tex}
 
@@ -55,6 +74,6 @@
 \addcontentsline{toc}{chapter}{Bibliography}
 \thispagestyle{empty}
 
-Visit~\url{https://thefundamentaltheor3m.github.io/Lecture-Notes-Template-2025/main.pdf} for the latest version of these notes. If you have any suggestions or corrections, please feel free to fork and make a pull request to my repository.
+Visit~\url{https://thefundamentaltheor3m.github.io/\REPONAME/main.pdf} for the latest version of these notes. If you have any suggestions or corrections, please feel free to fork and make a pull request to the \href{https://github.com/thefundamentaltheor3m/\REPONAME}{associated GitHub repository}.
 
 \end{document}

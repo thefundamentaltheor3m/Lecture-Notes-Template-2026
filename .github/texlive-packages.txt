@@ -1,0 +1,131 @@
+# TeX Live packages installed by .github/workflows/latex-build-deploy.yml.
+#
+# This is the DEFAULT manifest, shared by every repository that calls the
+# reusable workflow. A repository that needs something not listed here can drop
+# its own .github/texlive-packages.txt in beside its workflow; the build prefers
+# the caller's copy and falls back to this one. Prefer adding the package here,
+# though -- a local manifest is a copy that has to be maintained, which is the
+# thing this arrangement exists to avoid.
+#
+# This file is the cache key for the CI TeX Live installation: change it and the
+# next run reinstalls from scratch, leave it alone and every run restores the
+# same tree in seconds. That is the whole point of keeping it explicit rather
+# than installing `texlive-full`.
+#
+# The list below was derived mechanically from main.fls: every file pdflatex and
+# biber actually opened, mapped back to the TeX Live package that ships it,
+# taking the union over the template and the notes repositories that share it.
+# tlmgr pulls dependencies in automatically, so only direct requirements belong
+# here. Beyond the base scheme, collections (collection-latexrecommended and
+# friends) are deliberately not used: they drag in some 800 packages for the
+# sake of a handful.
+#
+# A \usepackage names a style file, which is not always the name of the TeX
+# Live package shipping it -- authblk lives in preprint, tikz in pgf. Where the
+# two differ, the entry carries a `# provides:` annotation naming the style
+# files it is here for. .github/scripts/check-manifest.sh reads those and fails
+# the build, before anything is installed, if the sources load something this
+# file does not account for.
+#
+# So: adding a \usepackage means either adding its TeX Live package here
+# (`tlmgr info foo.sty` names it), or -- if some entry already installs it --
+# adding the style file to that entry's `provides:` list.
+#
+# Blank lines and #-comments are ignored.
+
+# --- Base ------------------------------------------------------------------
+# install-tl bootstraps scheme-infraonly (tlmgr and nothing else), so the base
+# distribution is requested here like everything else -- that keeps the cache
+# key honest, since bumping the base invalidates it too.
+scheme-basic
+
+# --- Build tooling ----------------------------------------------------------
+latexmk
+biber
+biblatex
+logreq
+
+# --- Document class and core LaTeX -----------------------------------------
+latex     # provides: book, fontenc, inputenc
+tools     # provides: array, bm, longtable, verbatim
+appendix
+l3kernel
+l3packages
+l3backend
+etoolbox
+xkeyval
+iftex
+
+# --- Fonts ------------------------------------------------------------------
+amsfonts  # provides: amssymb
+cm-super
+sansmathfonts
+jknapltx  # provides: mathrsfs
+rsfs
+psnfss    # provides: pifont
+
+# --- Page layout and typography --------------------------------------------
+geometry
+fancyhdr
+lastpage
+parskip
+setspace
+ragged2e
+preprint  # provides: authblk
+enumitem
+csquotes
+babel
+babel-english
+
+# --- Maths ------------------------------------------------------------------
+amsmath
+amscls    # provides: amsthm
+mathtools
+mathdots
+cancel
+xfrac
+yhmath
+
+# --- Tables, floats, figures -----------------------------------------------
+booktabs
+float
+wrapfig
+caption   # provides: subcaption
+graphics  # provides: graphicx
+graphics-cfg
+graphics-def
+
+# --- Graphics and diagrams --------------------------------------------------
+pgf       # provides: tikz
+pgfplots
+pict2e
+tikz-cd
+tikz-3dplot
+qtree
+xcolor
+
+# --- Boxes, listings, notes -------------------------------------------------
+tcolorbox
+tikzfill
+environ
+trimspaces
+listings
+listingsutf8
+todonotes
+pdfcol
+
+# --- References and links ---------------------------------------------------
+hyperref
+cleveref
+url
+hycolor
+bookmark
+
+# --- Filler text used by the template --------------------------------------
+blindtext
+lipsum
+
+# --- PDF inclusion ----------------------------------------------------------
+pdfpages
+pdflscape
+eso-pic

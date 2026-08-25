@@ -1,0 +1,317 @@
+# Builds main.pdf and publishes it. Reusable: this is the one copy of the build,
+# and every notes repository derived from this template calls it rather than
+# carrying its own.
+#
+#   push to main   ->  https://<owner>.github.io/<repo>/main.pdf
+#                      plus the "Current" release
+#   pull request   ->  https://<owner>.github.io/<repo>/preview-<PR>/main.pdf
+#
+# Pull requests get their own directory on the Pages site, so reviewing a PR does
+# not mean overwriting the published notes with an unmerged draft. The preview is
+# torn down by latex-preview-cleanup.yml when the PR closes.
+#
+# A caller looks like this, and that is the whole of it:
+#
+#   jobs:
+#     latex:
+#       uses: thefundamentaltheor3m/Lecture-Notes-Template-2026/.github/workflows/latex-build-deploy.yml@main
+#       permissions:
+#         contents: write
+#         pull-requests: write
+#
+# The `on:` triggers stay with the caller, because a reusable workflow cannot
+# declare them. See .github/workflows/publish-latex.yml in this repository for
+# the copy every notes repository starts from.
+
+name: Build and Deploy LaTeX Project
+
+on:
+  workflow_call:
+    inputs:
+      main-tex:
+        description: 'Root document to compile, relative to the repository root.'
+        type: string
+        default: 'main.tex'
+      local-pdf:
+        description: >-
+          The committed, locally compiled PDF, republished alongside the CI build
+          as LastLocallyCompiled.pdf. Skipped without failing if it is absent.
+        type: string
+        default: 'TeX_Outputs/main.pdf'
+      template-repo:
+        description: >-
+          Repository holding the build scripts and the default package manifest.
+          Only worth overriding on a fork.
+        type: string
+        default: 'thefundamentaltheor3m/Lecture-Notes-Template-2026'
+      template-ref:
+        description: 'Ref of template-repo to take the scripts from.'
+        type: string
+        default: 'main'
+      texlive-year:
+        description: 'TeX Live release to install. Bump with texlive-repo.'
+        type: string
+        default: '2025'
+      texlive-repo:
+        description: >-
+          Pinned to a frozen historic release rather than the rolling tlnet, so
+          the cached tree and the repository tlmgr installs from can never fall
+          out of step with each other. Bump both together.
+        type: string
+        default: 'https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2025/tlnet-final'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compile the PDF
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The scripts and the default manifest live in the template, not in the
+      # notes repositories. The template is itself a caller, though, and its own
+      # pull requests must run the scripts as changed rather than as published,
+      # so a local copy wins when there is one.
+      #
+      # Cloned outside $GITHUB_WORKSPACE on purpose: check-manifest.sh greps the
+      # working tree for \usepackage, and the template's .tex files are not part
+      # of a notes repository's document.
+      - name: Resolve the build scripts
+        env:
+          TEMPLATE_REPO: ${{ inputs.template-repo }}
+          TEMPLATE_REF: ${{ inputs.template-ref }}
+        run: |
+          if [ -f .github/scripts/check-manifest.sh ]; then
+            echo "Using this repository's own build scripts."
+            echo "TEMPLATE_DIR=$PWD" >> "$GITHUB_ENV"
+          else
+            git clone --depth 1 --branch "$TEMPLATE_REF" \
+              "https://github.com/${TEMPLATE_REPO}.git" "$RUNNER_TEMP/template"
+            echo "Using the build scripts from ${TEMPLATE_REPO}@${TEMPLATE_REF}."
+            echo "TEMPLATE_DIR=$RUNNER_TEMP/template" >> "$GITHUB_ENV"
+          fi
+
+      # A repository with an unusual preamble can carry its own manifest; almost
+      # none do, and the shared default is the point of the arrangement.
+      - name: Resolve the TeX Live manifest
+        id: manifest
+        run: |
+          if [ -f .github/texlive-packages.txt ]; then
+            manifest=".github/texlive-packages.txt"
+            echo "Using this repository's own manifest."
+          else
+            manifest="$TEMPLATE_DIR/.github/texlive-packages.txt"
+            echo "Using the shared manifest from ${{ inputs.template-repo }}."
+          fi
+          echo "MANIFEST=$manifest" >> "$GITHUB_ENV"
+          # Hashed rather than hashFiles()'d because the file may sit outside the
+          # workspace, which hashFiles() cannot see.
+          echo "hash=$(sha256sum "$manifest" | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      # Grep, before anything is downloaded: a \usepackage that nobody added to
+      # the manifest would otherwise fail minutes later, inside a pdflatex log.
+      - name: Check the TeX Live manifest covers what the sources load
+        run: bash "$TEMPLATE_DIR/.github/scripts/check-manifest.sh"
+
+      # ~290 MB of TeX Live rather than the ~6 GB texlive-full that apt installs
+      # on every run. The key is the package manifest, so the tree is reinstalled
+      # only when the list of packages changes; a manifest edit falls back to the
+      # newest older tree and tops it up in place.
+      - name: Restore TeX Live
+        id: cache-texlive
+        uses: actions/cache@v4
+        with:
+          path: ~/texlive
+          key: texlive-${{ inputs.texlive-year }}-${{ runner.os }}-${{ steps.manifest.outputs.hash }}
+          restore-keys: |
+            texlive-${{ inputs.texlive-year }}-${{ runner.os }}-
+
+      - name: Install TeX Live
+        if: steps.cache-texlive.outputs.cache-hit != 'true'
+        env:
+          TEXLIVE_REPO: ${{ inputs.texlive-repo }}
+        run: bash "$TEMPLATE_DIR/.github/scripts/install-texlive.sh"
+
+      - name: Put TeX Live on PATH
+        run: |
+          for bindir in "$HOME"/texlive/bin/*; do
+            echo "$bindir" >> "$GITHUB_PATH"
+          done
+
+      # latexmk works out how many passes it needs from the auxiliary files, so
+      # handing it the previous run's .aux/.toc/.bcf/.fdb_latexmk usually turns
+      # three passes into one. Caches from main are visible to pull requests,
+      # which is where this pays off most.
+      - name: Restore LaTeX auxiliary files
+        uses: actions/cache@v4
+        with:
+          path: TeX_Outputs_CI
+          key: latex-aux-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            latex-aux-${{ runner.os }}-
+
+      - name: Compile
+        env:
+          MAIN_TEX: ${{ inputs.main-tex }}
+        run: |
+          latexmk=(latexmk -pdf -halt-on-error -file-line-error
+                   -interaction=nonstopmode -outdir=TeX_Outputs_CI)
+
+          # The title page prints \today, so the PDF itself is never reusable
+          # even when nothing else changed: drop it and let latexmk rebuild.
+          rm -f "TeX_Outputs_CI/$(basename "${MAIN_TEX%.tex}").pdf"
+
+          # latexmk drives biber as well, which two bare pdflatex passes never
+          # did -- the bibliography resolves now -- and reruns pdflatex until
+          # the cross-references stop moving.
+          "${latexmk[@]}" "$MAIN_TEX"
+
+          # cleveref and the table of contents read the previous pass's .aux, so
+          # the notes are compiled at least twice however warm the restored
+          # auxiliary files were: -g forces a pass latexmk considers unnecessary,
+          # rather than leaving the invariant to its rerun detection.
+          "${latexmk[@]}" -g "$MAIN_TEX"
+
+      - name: Assemble the site
+        env:
+          MAIN_TEX: ${{ inputs.main-tex }}
+          LOCAL_PDF: ${{ inputs.local-pdf }}
+        run: |
+          built="TeX_Outputs_CI/$(basename "${MAIN_TEX%.tex}").pdf"
+          mkdir -p public
+          cp "$built" public/main.pdf
+          # Not every repository commits its locally built PDF, and none should
+          # fail to publish over it.
+          if [ -n "$LOCAL_PDF" ] && [ -f "$LOCAL_PDF" ]; then
+            cp "$LOCAL_PDF" public/LastLocallyCompiled.pdf
+          else
+            echo "No committed local PDF at '${LOCAL_PDF:-<unset>}'; skipping."
+          fi
+          touch public/.nojekyll
+
+      - name: Upload main.pdf
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-pdf
+          path: public/main.pdf
+          if-no-files-found: error
+          retention-days: 30
+
+      # Handed to the publishing jobs so they need neither TeX Live nor a rebuild.
+      - name: Upload the site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: public/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish to the site root
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # Shared with every other job that pushes to gh-pages, so two deployments
+    # can never race each other into a rejected push.
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: public
+
+      # The root deployment replaces what it finds, which would take the open
+      # PRs' previews with it. Carry them over untouched.
+      - name: Carry over open pull requests' previews
+        run: |
+          if git fetch --depth=1 origin gh-pages; then
+            git archive FETCH_HEAD \
+              | tar -x -C public --wildcards 'preview-*' 2>/dev/null \
+              || echo "No previews to carry over."
+          else
+            echo "No gh-pages branch yet."
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          commit_message: "Publish main.pdf from ${{ github.sha }}"
+
+      - name: Publish main.pdf to the Current release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: Current
+          files: public/main.pdf
+
+  preview:
+    name: Publish a PR preview
+    needs: build
+    # Pull requests from forks get a read-only token, so there is nothing to
+    # deploy to; the main-pdf artifact is their build output.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: public
+
+      - name: Deploy the preview
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          destination_dir: preview-${{ github.event.pull_request.number }}
+          # Leave the site root and the other PRs' previews alone.
+          keep_files: false
+          commit_message: "Preview for PR #${{ github.event.pull_request.number }} (${{ github.event.pull_request.head.sha }})"
+
+      - name: Link the preview from the pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- latex-pdf-preview -->';
+            const url = `https://${context.repo.owner}.github.io/${context.repo.repo}`
+                      + `/preview-${context.issue.number}/main.pdf`;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const body = [
+              marker,
+              `📄 **[Compiled PDF for this pull request](${url})**`,
+              '',
+              `Built from \`${sha}\`, rebuilt on every push, and removed when this pull request closes.`,
+            ].join('\n');
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo, issue_number: context.issue.number, body,
+              });
+            }

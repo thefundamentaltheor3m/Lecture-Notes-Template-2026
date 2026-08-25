@@ -307,3 +307,6 @@ TSWLatexianTemp*
 
 *.DS_Store
 */.DS_Store
+
+## CI build directory (see .github/workflows/latex-build-deploy.yml)
+TeX_Outputs_CI/

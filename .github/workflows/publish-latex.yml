@@ -1,173 +1,60 @@
-# Adapted from https://gist.github.com/m516/550faa3a080c6c2d5daadc4678d81a79
-# This Action autogenerates PDFs and standalone HTML 
-# out of your Overleaf projects (or any LaTeX-live project).
-# 
-# PDF  generator: pdflatex
-# HTML generator: htlatex 
-# 
-# Both tools come from LaTeX Live and are executed on 
-# the latest version of Ubuntu.
-# 
-#    Given:
-#       A repository with a LaTeX project with main.tex in the root folder
-#   
-#    On every push:
-#       This GitHub Action builds the project with LaTeX Live. 
-#       A   PDF version of main.tex is uploaded to a Release called "Current." 
-#           (Make sure that release exists first)
-#       An HTML version of main.tex is uploaded to a new branch called gh-pages. 
-#           (Make sure GitHub Pages is active and reads from the gh-pages branch)
-
+# Builds and publishes main.pdf.
+#
+# The build itself lives in .github/workflows/latex-build-deploy.yml, which every
+# notes repository derived from this template calls instead of carrying its own
+# copy. This file is the caller, and it exists only because a reusable workflow
+# cannot declare its own `on:` triggers.
+#
+# A notes repository copies this file with one line changed -- the `uses:` below
+# becomes the absolute form, so that it tracks the template:
+#
+#   uses: thefundamentaltheor3m/Lecture-Notes-Template-2026/.github/workflows/latex-build-deploy.yml@main
+#
+# Here in the template the local `./` form is deliberate: it runs the reusable
+# workflow as it stands in the commit under test, so a pull request that changes
+# the build is checked by the build it changes, rather than by whatever is on
+# `main`.
 
 name: Build and Deploy LaTeX Project
 
-permissions: write-all
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '.claude/**'
+      - '.vscode/**'
+      - '.gitignore'
+      - 'CLAUDE.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'TOPICS.md'
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    paths-ignore:
+      - '.claude/**'
+      - '.vscode/**'
+      - '.gitignore'
+      - 'CLAUDE.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'TOPICS.md'
   workflow_dispatch:
 
+# A second push to the same branch makes the first build's PDF irrelevant.
+# Concurrency belongs to the caller: it is keyed on the triggering ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true  # Cancels any previous runs on the same branch
+permissions:
+  contents: read
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # # Caches texlive-full
-      # - name: Cache texlive-full
-      #   uses: actions/cache@v4
-      #   id: cache-texlive-full
-      #   with:
-      #     path: ~/texlive
-      #     key: ${{ runner.os }}-texlive-${{ secrets.TEXLIVE_FULL_VERSION }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-texlive-
-
-      # # Caches apt packages
-      # - name: Cache apt packages
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: /var/cache/apt
-      #     key: ${{ runner.os }}-apt-${{ hashFiles('**/apt.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-apt-
-      
-      # ChatGPT Code
-        
-      # Cache APT packages
-      - name: Cache APT packages
-        id: cache-apt
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt/archives
-          key: apt-cache-${{ runner.os }}
-          restore-keys: |
-            apt-cache-
-
-      # Update APT and Install Dependencies
-      - name: Update APT and Install Dependencies
-        if: steps.cache-apt.outputs.cache-hit != 'true'
-        run: |
-          sudo apt update
-
-      # Retrieve TeX Live installation from Cache
-      - name: Cache TeX Live
-        id: cache-texlive
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/texlive
-          key: texlive-2023-${{ runner.os }}
-          restore-keys: |
-            texlive-2023-
-
-      # Install TeX Live
-      - name: Install TeX Live (if not cached)
-        if: steps.cache-texlive.outputs.cache-hit != 'true'
-        run: |
-          sudo apt install -y texlive-full  # Installs only if cache is missing
-      
-      # Save TeX Live cache AFTER successful installation
-      - name: Save TeX Live Cache
-        if: steps.cache-texlive.outputs.cache-hit != 'true'
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/texlive
-          key: texlive-2023-${{ runner.os }}
-
-      - name: Add TeX Live to PATH
-        run: echo "/usr/local/texlive/2023/bin/x86_64-linux" >> $GITHUB_PATH
-      
-      # Compiles 
-      - name: Build Latex PDF and HTML
-        run: |
-          # if [ -f /var/cache/apt/pkgcache.bin ]; then
-          #   echo "Restoring apt packages from cache."
-          #   sudo cp -r /var/cache/apt/* /var/lib/apt/lists/
-          # else
-          #   echo "Updating apt packages."
-          #   sudo apt update
-          # fi
-          # if [ -d ~/texlive ]; then
-          # echo "Texlive directory exists."
-          #   if ! ~/texlive/bin/x86_64-linux/tlmgr --version | grep -q "${{ secrets.TEXLIVE_FULL_VERSION }}"; then
-          #     echo "Texlive version does not match. Reinstalling..."
-          #     sudo rm -rf ~/texlive
-          #     sudo apt install texlive-full
-          #   else
-          #     echo "Texlive version matches. Using cached version."
-          #   fi
-          # else
-          #   echo "Texlive directory does not exist. Installing..."
-          #   sudo apt install texlive-full
-          # fi
-          mkdir ./public
-          cp TeX_Outputs/main.pdf public/LastLocallyCompiled.pdf
-          cp *.tex public/
-          cp -r Chapters public/
-          cp -r TeX_Setup public/
-          cd public/
-          pdflatex main.tex
-          pdflatex main.tex  # Cleveref uses aux files. Need to compile twice!
-          # make4ht main.tex
-          # mv main.html index.html
-  
-      # Uploads the PDF
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: PDF
-          path: public/main.pdf
-
-      # Publishes the PDF as a release
-      - name: Publish PDF as Release
-        uses: softprops/action-gh-release@v2
-        # if: startsWith(github.ref, 'refs/tags/')
-        with:
-          tag_name: Current
-          files: public/main.pdf
-          
-      # Publish HTML to GitHub Pages
-      - name: Publish HTML to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+  latex:
+    uses: ./.github/workflows/latex-build-deploy.yml
+    # A called workflow cannot grant itself more than the caller has, so the
+    # publishing jobs' `contents: write` and `pull-requests: write` are granted
+    # here and narrowed there.
+    permissions:
+      contents: write
+      pull-requests: write

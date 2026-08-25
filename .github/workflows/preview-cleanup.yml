@@ -1,0 +1,25 @@
+# Removes a closed pull request's PDF preview from the Pages site.
+#
+# The cleanup itself lives in .github/workflows/latex-preview-cleanup.yml; this
+# file only supplies the trigger. A notes repository copies it with the `uses:`
+# below changed to the absolute form, so that it tracks the template:
+#
+#   uses: thefundamentaltheor3m/Lecture-Notes-Template-2026/.github/workflows/latex-preview-cleanup.yml@main
+#
+# The local `./` form here is for the same reason as in publish-latex.yml.
+
+name: Remove PR preview
+
+on:
+  pull_request:
+    types: [ closed ]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    uses: ./.github/workflows/latex-preview-cleanup.yml
+    permissions:
+      contents: write
+      pull-requests: write

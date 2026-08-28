@@ -69,11 +69,16 @@ commented out.
 Adding a chapter means: create the directory, write the chapter file with its section
 `\input`s, and add one `\input` line to `main.tex`.
 
-**Everything under `Chapters/` is placeholder.** `0_Overview.tex`,
-`1_Intro/1_1_Imp_Defs.tex`, `1_Intro/1_2_Another_Section.tex`, `2_Another Chapter/`
-and `Appendices/` exist to demonstrate the layout and to give the template something
-to compile. A new notes repository clears them as real material arrives; see the
-scaffolding sections of `/integrate` and `/organize`.
+**Everything under `Chapters/` is placeholder, with one exception.**
+`0_Overview.tex`, `1_Intro/1_1_Imp_Defs.tex`, `1_Intro/1_2_Another_Section.tex`,
+`2_Another Chapter/` and `Appendices/` exist to demonstrate the layout and to give the
+template something to compile. A new notes repository clears them as real material
+arrives; see the scaffolding sections of `/integrate` and `/organize`.
+
+The exception is `1_Intro/todays_lecture.tex`, the lecture inbox described under
+[Lecture workflow](#lecture-workflow). It is infrastructure rather than scaffolding:
+it stays, it gets emptied rather than deleted, and its `\input` line stays last in
+whichever chapter file is current.
 
 ## Authoring conventions
 
@@ -116,17 +121,23 @@ banner at the end of the file.
 ## Lecture workflow
 
 Notes are taken linearly but organized by topic, so raw and integrated material are
-kept distinct. A lecture's raw notes go in a throwaway section file inside whatever
-chapter is current, with `Lecture_` in its basename and the date as its title:
+kept distinct. Raw notes go into a **reusable inbox** in whichever chapter is current:
 
 ```
-Chapters/1_Intro/1_4_Lecture_0824.tex     ->  \section{Lecture 2026-08-24}
+Chapters/1_Intro/todays_lecture.tex
 ```
 
-It is `\input` from its chapter file like any other section, so the document always
-compiles. The `/integrate` skill (`.claude/skills/integrate/`) then redistributes that
-content into the proper sections by topic and deletes the staging file. Do not treat a
-`Lecture_*.tex` file as settled content.
+It is `\input` last from its chapter file, so the document always compiles and the
+Overleaf preview builds live during the lecture. `/integrate` redistributes the
+content into the proper sections by topic and then **empties the file, keeping it** —
+the author reuses it every lecture, and deleting it or its `\input` line breaks the
+preview. Do not treat anything in it as settled content.
+
+The inbox is a convenience, not the definition of what is new. **`/integrate` works
+out the latest lecture's material from the git history** — a watermark commit, the
+diff from there to `HEAD`, and the uncommitted working tree — so material typed
+straight into a real section file is still found. A date or heading the author wrote
+live is a cross-check on that, not the source of truth; where the two disagree, ask.
 
 `TOPICS.md` at the repo root is the running map of topic to chapter/section, and is
 the authority on where new material belongs. `/organize` owns it; `/integrate`
@@ -168,20 +179,60 @@ commented-out content, and do not delete one without addressing it.
 
 `\sorry` is the other inline marker, and it means something different: not a scoped
 instruction but an unfilled gap — a proof not given, a case not covered, a development
-that broke off. The `/fill-sorries` skill (`.claude/skills/fill-sorries/`) closes them,
-and it is the one skill authorized to work the mathematics out for itself rather than
-following an instruction. It marks what it supplied with a `% [FILLED]` comment, so
-the notes stay honest about which arguments came from the lecturer.
+that broke off. The `/fill-sorries` skill (`.claude/skills/fill-sorries/`) closes them.
+Where a `% [CLAUDE]` directive sits on the same gap as a `\sorry`, the directive wins
+and `/address-comments` takes it: a scoped instruction the author wrote by hand beats
+a bare marker.
 
-The five skills divide by how much latitude each has:
+Three further markers record where the notes are no longer purely the lecturer's, and
+all of them are written by a skill rather than by the author:
+
+| Marker | Written by | Means |
+| --- | --- | --- |
+| `% [FILLED]` | `/fill-sorries` | an argument supplied here that the lecture did not give |
+| `% [CORRECTED]` | `/check-correctness` | a statement changed, with the original quoted so it can be reverted by eye |
+| `% [SUSPECT]` | `/check-correctness` | believed wrong, left unchanged, awaiting the author |
+
+Never write a `% [CLAUDE]` marker yourself. That is the author's channel for
+delegating work, and one you write is work the next `/post-lecture` run will silently
+do.
+
+### The one you usually want
+
+**`/post-lecture`** (`.claude/skills/post-lecture/`) is the whole after-lecture
+routine in one pass and one pull request: fill the gaps, address the directives, check
+the mathematics, fix the spellings, integrate the result. It is a *composition* — it
+adds no rules of its own, and each phase is the component skill read and followed as
+written. Reach for it by default after a lecture; reach for a component directly when
+you want only that one thing.
+
+Its five phases run in a fixed order — write, then check, then tidy, then move — and
+one branch carries five commits, one per phase, so the author can tell invented
+mathematics from a cosmetic spelling sweep in review.
+
+### The seven, by how much latitude each has
 
 | Skill | Acts on | Latitude |
 | --- | --- | --- |
+| `/post-lecture` | one lecture, end to end | composition; owns scope and order only |
 | `/address-comments` | `% [CLAUDE]` directives | do exactly what the directive says |
 | `/fill-sorries` | `\sorry` markers | work out the mathematics; decide and report |
+| `/check-correctness` | what is already written | fix what is false; every change adjudicated |
 | `/integrate` | one lecture's raw notes | place new material; never restructure |
 | `/organize` | the notes as they stand | rearrange only; add and delete nothing |
 | `/americanise` | British spellings | spelling only; never the mathematics |
+
+`/organize` is deliberately **not** part of `/post-lecture`: restructuring renumbers
+every result under the heading it touches, so it belongs in a diff of its own, run
+when `TOPICS.md` has accumulated enough structural pressure to justify it.
+
+**Two skills do mathematics, under opposite constraints.** `/fill-sorries` supplies an
+argument that does not exist, so it has the freest hand in the repository.
+`/check-correctness` overwrites one that does, so it changes as little as it can and
+puts *every* candidate correction to an independent agent before applying it — then,
+if it changed anything, has the result reviewed by two further independent agents on
+the pull request. A statement found false while filling a gap belongs to it, not to
+`/fill-sorries`.
 
 ## Publishing
 

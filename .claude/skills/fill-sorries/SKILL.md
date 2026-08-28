@@ -11,12 +11,14 @@ skipped a proof, waved at a case, asserted a computation, or simply ran out of t
 mid-development.
 
 ```tex
-So now assume that $H$ has exactly $6$ edges and $6$ vertices and is not $2$-colorable. \sorry
+Every finitely generated nilpotent Lie algebra therefore admits such a basis. \sorry
 ```
 
 Closing one is not a patching job. It is a writing job with mathematics in it, and it
-is the one place in this repository where **you are expected to work things out for
-yourself.**
+is the place in this repository where **you are expected to work things out for
+yourself** with the freest hand. (`/check-correctness` also does mathematics, but under
+the opposite constraint: it is overwriting the author's, so it changes as little as it
+can and has every change adjudicated.)
 
 ## You are authorized to work autonomously
 
@@ -213,6 +215,7 @@ Then, separately:
 - **Unmarked gaps you noticed**, with a suggested `\sorry` site — not filled.
 - **New macros, labels and cross-references.**
 - **Anything you think is wrong** in the existing notes, quoted, left unchanged.
+  That list is the input to `/check-correctness`, which is the skill that acts on it.
 - The build result.
 
 ## Where this sits among the skills
@@ -221,6 +224,12 @@ Then, separately:
   hand. Tight scope, minimal diff, match the surrounding density, ask when unsure.
 - **`/fill-sorries`** — this skill — closes gaps the author flagged but did not
   specify. Broad scope, write what the mathematics needs, decide and report.
+- **`/check-correctness`** asks whether what is *already written* is true, and fixes
+  it as minimally as it can. It is the other skill allowed to do mathematics, but with
+  the opposite disposition to this one: here you are supplying an argument that does
+  not exist, there you are overwriting one that does, so every correction it makes is
+  adjudicated by an independent agent first. A statement you found false while filling
+  a gap belongs to it, not to you.
 - **`/integrate`** absorbs a lecture. It *creates* `\sorry` markers rather than
   filling them, and does not do mathematics of its own.
 - **`/organize`** rearranges. It neither adds nor removes mathematics.

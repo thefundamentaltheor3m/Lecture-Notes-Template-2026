@@ -1,6 +1,6 @@
 ---
 name: integrate
-description: Absorb one lecture's raw notes into the structured chapter/section hierarchy of these lecture notes. Use when the user has just taken notes in a throwaway "Lecture <date>" section and wants them redistributed by topic, matching the existing expository style, boxed environments, numbering, and labels. Triggers on "/integrate", "integrate my notes", "integrate today's lecture", "fold in the last lecture".
+description: Absorb the latest lecture's raw notes into the structured chapter/section hierarchy of these lecture notes. Finds what is new from the git history rather than from any naming convention, so it works wherever the author happened to type. Use when the user has just taken notes and wants them redistributed by topic, matching the existing expository style, boxed environments, numbering, and labels. Triggers on "/integrate", "integrate my notes", "integrate today's lecture", "fold in the last lecture".
 ---
 
 # Integrating a lecture into the notes
@@ -22,38 +22,122 @@ Read these first; everything below assumes them.
   whether this lecture's material fits an existing section or has earned one of its
   own. Making the document match it is `/organize`'s job, not yours.
 
-## The staging convention
+## Finding the new material
 
-A raw lecture lives as an ordinary section file inside the chapter that was current
-during the lecture:
+**The git history is the source of truth for what is new.** Not a filename, not a
+`\section{Lecture …}` heading, not a date comment. Those are conventions the author
+may or may not have followed on any given day, and a skill that depends on one of them
+breaks the first time a lecture is typed somewhere unexpected. The history cannot be
+wrong about what changed.
+
+The author writes in Overleaf during the lecture and syncs, so raw material arrives as
+ordinary commits — `feat: Lecture 2`, `Updates from Overleaf` — touching whatever files
+were open. It may be one commit or several, one file or several, and it need not be
+committed at all yet.
+
+### Establish the watermark
+
+Find where integration last reached. `TOPICS.md` is the sharpest signal available,
+because `/integrate` and `/organize` are the only things that touch it:
+
+```bash
+git log --oneline -- TOPICS.md            # the last few integration passes
+git log --oneline -20 -- Chapters/ TeX_Setup/   # and the rhythm of raw arrivals
+```
+
+Read both before deciding. **The watermark is a starting heuristic, not an oracle**: a
+commit can touch `TOPICS.md` for reasons that are not an integration — a spelling
+sweep, a rename — and taking such a commit as the watermark would narrow the diff and
+hide material. So pick the most recent commit you can actually justify as "the notes
+were settled here", and say which one you picked and why.
+
+### Take the diff, from every angle
+
+```bash
+git diff <watermark>..HEAD -- Chapters/ TeX_Setup/     # everything added since
+git log --diff-filter=A --name-only <watermark>..HEAD -- Chapters/   # new files
+git status --short && git diff -- Chapters/ TeX_Setup/ # NOT YET COMMITTED
+```
+
+That last one matters as much as the others. Notes typed minutes ago may still be
+sitting unstaged in the working tree, and material that is not in a commit is still
+material. Take the **union** of every signal; when they disagree, prefer the wider
+reading and say what you took.
+
+Then **cross-check against the current tree.** Anything the diff surfaces that already
+sits under a real heading in a settled section is already integrated — the diff shows
+it because the watermark was conservative, not because it needs moving. Drop those and
+say so.
+
+### Get the date from the commit
+
+```bash
+git log -1 --format='%ad' --date=short <the commit that brought the material>
+```
+
+`TOPICS.md` annotates every entry with the lecture date, and the commit date is a fact
+rather than a convention. Prefer it. If the author also wrote a date in the file — a
+leading `% 26 Aug 2026`, a `\section{Lecture …}` heading — use it as a cross-check, and
+if the two disagree, ask: one of them is a typo and guessing picks the wrong one.
+
+### The staging file, when there is one
+
+The author keeps a reusable inbox in whichever chapter is current:
 
 ```
-Chapters/1_Logic/1_4_Lecture_0824.tex     <- raw; \section{Lecture 2026-08-24}
+Chapters/1_Intro/todays_lecture.tex
 ```
 
-Recognize a raw file by `Lecture_` in its basename. It is `\input` by its chapter
-file like any other section, so the notes always compile. **Integration dissolves
-it**: its content is redistributed and the file and its `\input` line are removed.
+It is `\input` from its chapter file, so the notes always compile and the Overleaf
+preview builds live during the lecture. When the new material is in there, **empty the
+file rather than deleting it**: the author reuses it every lecture, and deleting it or
+its `\input` line would break the preview and force them to recreate it. Leave behind
+only a short header comment saying what the file is for.
 
-If the user names a file or a date, use that. Otherwise glob
-`Chapters/**/*Lecture_*.tex`; if exactly one exists, that is the target. If several
-exist, list them and ask which to integrate — do not guess, and do not integrate
-several at once unless asked.
+This file is a convenience, not the definition of the input. Do not require it, do not
+assume the material is confined to it, and do not stop because it is absent or empty
+while the history plainly shows new material elsewhere.
 
-**If no staging file exists**, the convention was not followed: the lecture was
-written straight into a real section file, or into a template-named one such as
-`1_1_Imp_Defs.tex`. Do not stop. Identify the file holding the unintegrated material,
-say which file you are treating as the staging file and why, and proceed — the
-ledger, the plan and the report all work the same way. The only difference is at the
-end: the file is not deleted, because it is a real section file. Its *contents* are
-redistributed and whatever is left of it is either a legitimate section or is emptied
-and removed. If you cannot tell which material is unintegrated, ask rather than
-guess.
+### When there is genuinely nothing to do
 
-**If the notes contain nothing to integrate into** — a first lecture, or a repository
-still all template placeholders — then there is no integration to do, and the right
-skill is `/organize`: the task is arranging one lecture's material sensibly, not
-folding it into an existing arrangement. Say so and stop.
+If every signal is empty — no commits since the watermark, nothing unstaged, an empty
+inbox — then there is nothing to integrate. Say so and stop; do not go hunting.
+
+**If the notes contain nothing to integrate *into*** — a first lecture, or a repository
+still all template placeholders — then the right skill is `/organize`: the task is
+arranging one lecture's material sensibly, not folding it into an existing arrangement.
+Say so and stop.
+
+## The author's structure is a gift
+
+The author writes real headings as the lecture happens — `\subsection{Ramsey Numbers}`
+— rather than dumping unstructured prose. **Assume every bit of that structure is
+deliberate and meant to help you.** It is the judgment of the person who was actually
+in the room, and it tells you things the text alone does not: what they considered one
+idea, where they felt a topic began, which results they saw as belonging together.
+
+So: read the headings before you place anything, and treat them as the author's
+proposal about where the material goes. Start from that proposal. Most of the time it
+will be right, and following it costs you nothing.
+
+**You may overrule it.** These are choices made mid-lecture, at speed, without knowing
+what the rest of the course holds, and `ORGANIZATION.md` is still the standard: a
+heading that splits one line of enquiry in two, or fuses two into one, or reaches for a
+fourth level of depth, should be changed. The author expects that — it is why the notes
+get integrated at all rather than just accumulating.
+
+But overruling carries two obligations:
+
+- **Never silently.** Every structural choice of theirs that you changed goes in the
+  plan and in the report, named, with the reason. A reader of the diff should not have
+  to reverse-engineer which headings were theirs and which are yours.
+- **Make it cheap to reverse.** The author has the final say when they review the pull
+  request, so each overruled choice should be individually revertable — which in
+  practice means saying plainly what you did, not burying three structural decisions in
+  one hunk.
+
+Flattening or discarding a heading without mentioning it is the one thing that is
+always wrong here, because it destroys information the author cannot get back.
 
 ## There is no syllabus
 
@@ -81,11 +165,11 @@ respect for the author's mathematics. They do not share a scope.
 
 | | `/integrate` | `/organize` |
 | --- | --- | --- |
-| Input | one lecture's raw notes | the notes as they already stand |
+| Input | whatever the history shows is new | the notes as they already stand |
 | Adds material | yes, that is the point | never |
 | Restructures | only enough to house the new material | yes, that is the point |
 | `TOPICS.md` | appends its own entries | owns the file |
-| Ends with | the raw file dissolved | the same content, better arranged |
+| Ends with | the inbox emptied and kept | the same content, better arranged |
 
 **Restructuring what already exists is out of scope here.** Concretely, you may:
 
@@ -109,14 +193,21 @@ not.
 
 ## Procedure
 
-### 1. Build the ledger
+### 1. Build the ledger, from the diff
 
-Before changing anything, enumerate **every** discrete piece of the raw file into a
-checklist: each theorem-like environment, each displayed derivation, each figure or
-TikZ picture, each paragraph of prose, each aside. Give every item a short handle
-and quote its opening words. Keep this ledger for the rest of the run. It is the
-only guard against silently dropping something, and the raw file is deleted at the
-end, so an unledgered item is a lost item.
+Build the ledger **out of the diff you established above**, not by reading a file. That
+is what makes it trustworthy: the diff is the complete set of what is new, so a ledger
+derived from it cannot quietly omit material that was typed somewhere you did not think
+to look.
+
+Enumerate **every** discrete piece: each theorem-like environment, each displayed
+derivation, each figure or TikZ picture, each paragraph of prose, each aside — and each
+heading the author wrote, recorded as their placement proposal (see **The author's
+structure is a gift**). Give every item a short handle, quote its opening words, and
+note which commit or which unstaged hunk it came from.
+
+Keep the ledger for the rest of the run. It is the only guard against silently dropping
+something, and the inbox is emptied at the end, so an unledgered item is a lost item.
 
 ### 2. Read the surrounding notes
 
@@ -141,6 +232,10 @@ Produce a plan and **stop for confirmation before writing anything**. The plan s
 for each ledger item, where it goes and why; then separately lists
 
 - new sections or subsections to create, with their titles,
+- **every heading the author wrote that you are keeping**, and
+- **every one you are overruling** — quoting theirs, giving yours, and saying which
+  rule in `ORGANIZATION.md` makes the change necessary. This list is the one the
+  author will read first, because it is where your judgment overrides theirs,
 - existing material to be moved, quoting what and from where to where,
 - new linking prose to be written, with a sentence on what each passage will argue,
 - anything you cannot place confidently.
@@ -159,7 +254,7 @@ Working rules, in order of importance:
 **Never lose or alter mathematics.** Definitions, theorem/lemma/proposition
 statements, and proofs move *verbatim* — copy them, do not retype or paraphrase them.
 If a statement seems wrong or incomplete, move it unchanged and flag it in the report;
-do not fix it silently.
+do not fix it silently. `/check-correctness` is the skill that acts on those flags.
 
 **Rewrite freely at the level of connective tissue.** Transitions, motivating
 sentences, section titles and ordering are yours to adjust so the result reads
@@ -185,7 +280,7 @@ parts that bite hardest during an integration:
   and nowhere else. American spelling: *coloring*, *neighborhood*, *generalization*.
 - **Boxed environments always** — `boxdefinition`, `boxtheorem`, `boxlemma`,
   `boxexample`, … (`CLAUDE.md` has the family). Raw notes are written loosely;
-  converting them is expected. Definitions carry a title, `[Derived Series]`; results
+  converting them is expected. Definitions carry a title, `[Coloring]`; results
   usually do not. `\hfill` after `\begin{box…}` or `\begin{proof}` when the body
   opens with a list. `\textbf{}` the term being defined, in the definition body.
 - **`align*` for every display**, even one-liners. One paragraph per source line, no
@@ -214,7 +309,11 @@ Then, mechanically:
   an older one.
 - Remember results are numbered per *section*, so moving a theorem across a section
   boundary renumbers it. Grep for stale `\Cref`s to anything you moved.
-- Delete the raw file and its `\input` line last, once every ledger item is placed.
+- Empty the inbox last, once every ledger item is placed: leave the file, a short
+  header comment saying what it is for, and its `\input` line. Delete neither the file
+  nor the line — the author reuses it every lecture and the Overleaf preview depends
+  on it. Material that came from somewhere other than the inbox leaves that file as it
+  finds it, minus what moved.
 
 ### 5. Append to TOPICS.md
 
@@ -237,9 +336,8 @@ subject would normally reach.
 
 ```
 <!-- No syllabus for this course. Structure is inferred from lectures and revised
-     as they arrive. Currently reads as: the basic objects first, with <the running
-     thread> as the thread tying them together; <later topic> may want its own
-     chapter. -->
+     as they arrive. Currently reads as: <the basic objects> first, with <the running
+     thread> tying them together; <later topic> may want its own chapter. -->
 
 ## 1. <Chapter Title>  -> Chapters/1_Intro/
   1.1 <Section Title>        [<date>]
@@ -251,8 +349,8 @@ subject would normally reach.
   <topic> (mentioned <date>)
 
 ## Structural pressure
-  1.1 is doing the work of three sections [noted <date>] — three separate lines of
-  enquiry under one heading. Run /organize.
+  1.1 is at 340 lines across 6 subsections [noted 2026-09-02] — over the corpus
+  range for a section; probably wants splitting. Run /organize.
 ```
 
 If this run's material makes the existing structure wrong rather than incomplete,
@@ -264,10 +362,16 @@ label under it, and that belongs in a diff of its own.
 
 1. **Ledger check** — walk the ledger and name the file and section each item landed
    in. Anything unaccounted for is a bug; find it before continuing.
-2. **Build** — `latexmk -pdf -outdir=TeX_Outputs main.tex`. It must compile. Check
+2. **Diff check** — re-run the diff from the watermark and confirm every added line is
+   now accounted for, either placed or consciously left. This catches the failure the
+   ledger cannot: material that was never ledgered because you did not see it.
+3. **The inbox** — if the material came from `todays_lecture.tex`, that file still
+   exists, holds nothing but its header comment, and is still `\input` from its
+   chapter file. An emptied inbox renders nothing.
+4. **Build** — `latexmk -pdf -outdir=TeX_Outputs main.tex`. It must compile. Check
    the log for undefined references and duplicate labels, which are the usual
    symptoms of a botched move.
-3. Refresh the committed `TeX_Outputs/main.pdf` (it is tracked deliberately).
+5. Refresh the committed `TeX_Outputs/main.pdf` (it is tracked deliberately).
 
 ### 7. Branch, commit, PR
 
@@ -320,16 +424,31 @@ https://github.com/thefundamentaltheor3m/<REPO>/compare/main...integrate/<date>
 
 ## Report back
 
-Close with: where each group of material went; every existing passage you moved or
-rewrote, and why; the linking prose you added; anything left unplaced or flagged;
-and the build result. Be specific about the edits to existing content — those are
-the ones the user most needs to check, and burying them defeats the propose-then-apply
-step.
+Close with:
+
+- **What you took as input, and how you found it** — the watermark commit you picked
+  and why, the commits and unstaged hunks the material came from, and anything the
+  diff surfaced that turned out to be already integrated. If the signals disagreed,
+  say how.
+- **The date you recorded, and where it came from** — the commit, and whether a date
+  written in the file agreed with it.
+- **Every heading of the author's that you overruled**, quoting theirs and giving
+  yours, with the reason. Put this near the top: it is where your judgment overrode
+  the judgment of the person who was in the room, and they have the final say on it
+  when they review the pull request.
+- Where each group of material went.
+- Every existing passage you moved or rewrote, and why.
+- The linking prose you added.
+- Anything left unplaced or flagged, and the build result.
+
+Be specific about the edits to existing content and about the overruled structure —
+those are the ones the author most needs to check, and burying them defeats the
+propose-then-apply step.
 
 ## Leftover template scaffolding
 
-A repository cut from [Lecture-Notes-Template-2026][tpl] starts out as nothing but
-scaffolding, and the first few integrations happen while it is still standing:
+A repository cut from this template starts out as nothing but scaffolding, and the
+first few integrations happen while it is still standing:
 
 ```
 Chapters/0_Overview.tex                     one template sentence
@@ -340,13 +459,11 @@ Chapters/Appendices/                        placeholder, \input commented out in
 ```
 
 Offer to clear whichever ones are actually in your way — but ask first, and never
-delete a file that has acquired real content. The rest is a structural problem
-rather than an integration one, so leave it and recommend `/organize`.
+delete a file that has acquired real content. Scaffolding is a structural problem
+rather than an integration one, so otherwise leave it and recommend `/organize`.
 
-Note that `Chapters/1_Intro/` is **not** a misnomer once chapter 1 acquires a real
-title. `1_Intro` is the author's directory name for chapter 1 across three of the
-four sibling repositories — including ones whose chapter 1 is titled *A Recap of
-Undergraduate Topology* and *Character Theory* — so it is a convention rather than
-template residue. Leave it alone.
-
-[tpl]: https://github.com/thefundamentaltheor3m/Lecture-Notes-Template-2026
+Note in particular that `Chapters/1_Intro/` is **not** a misnomer once chapter 1
+acquires a real title: `1_Intro` is the author's directory name for chapter 1 across
+three of the four sibling repositories — including ones whose chapter 1 is titled
+*A Recap of Undergraduate Topology* and *Character Theory* — so it is a convention
+rather than template residue. Leave it alone.

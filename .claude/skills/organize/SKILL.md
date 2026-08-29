@@ -3,7 +3,7 @@ name: organize
 description: Refactor the chapter, section and subsection structure of these lecture notes so that what is already written sits where it belongs, and maintain TOPICS.md as the record of that structure. Use when the notes have outgrown or drifted from their current arrangement — a section doing the work of three, a chapter whose title no longer describes its contents, material in the wrong place, a heading level that should not exist — or when TOPICS.md needs rebuilding. Triggers on "/organize", "organize the notes", "reorganize the chapters", "restructure this", "sort out TOPICS.md". Not for absorbing a new lecture: that is /integrate.
 ---
 
-# Organising the notes
+# Organizing the notes
 
 There is no syllabus for this course. The structure of `Chapters/` was therefore
 never designed — it accreted, one lecture at a time, and every lecture was placed
@@ -176,10 +176,14 @@ regardless of the chapter's title — see `ORGANIZATION.md`.
 
 **No subsubsections, ever.** If the plan wanted one, the section above it was wrong.
 
-**Placeholders left over from the template** — `Chapters/0_Overview.tex`,
-`Chapters/2_Another Chapter/`, `Chapters/Appendices/` — are in scope for this skill
-in a way they are not for `/integrate`, since they are a structural problem. Propose
-clearing them; never clear a file that has acquired real content.
+**Placeholders left over from the template** are in scope for this skill in a way
+they are not for `/integrate`, since they are a structural problem. In a fresh
+repository that is everything under `Chapters/`: `0_Overview.tex`,
+`1_Intro/1_1_Imp_Defs.tex`, `1_Intro/1_2_Another_Section.tex`, `2_Another Chapter/`
+and `Appendices/`. Propose clearing them as real material displaces them, recording in
+`TOPICS.md` what went and why; never clear a file that has acquired real content.
+`Chapters/Appendices/` is worth keeping longest — three of the four sibling
+repositories keep one, two of those with the `\input` still commented out.
 
 ### 6. Rebuild TOPICS.md
 
@@ -247,6 +251,7 @@ https://github.com/thefundamentaltheor3m/<REPO>/compare/main...organize/<short-d
 - **Prose you rewrote** — titles, bridges, intros. These are the only places where
   words changed, so they are what the author needs to read.
 - **Anything you think is wrong** in the notes, quoted, left unchanged.
+  That list is the input to `/check-correctness`, which is the skill that acts on it.
 - The build result.
 
 Be specific about the prose. In a restructuring pass the moves are mechanical and

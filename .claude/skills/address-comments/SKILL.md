@@ -145,12 +145,12 @@ would be unreadable. When it clears that bar, add it; when it does not, write th
 expression out.
 
 The paradigm case that *does* clear the bar is **a picture the course will want
-again in a different size or shape**. `shortcuts.tex` already establishes the
-pattern in its `% TIKZ:` block — `\drawplane`, `\drawsquare{halfwidth}`,
+again in a different size or shape**. `shortcuts.tex` already establishes the pattern
+in its `% TIKZ:` block — `\drawplane`, `\drawsquare{halfwidth}`,
 `\labeledpoint{x}{y}{dx}{dy}{label}` — reusable pictures parameterized by the one
 thing that varies. A comment asking for a triangle, a pentagon and a 7-gon is not
-asking for three hand-placed `tikzpicture`s; it is asking for one command used
-three times:
+asking for three hand-placed `tikzpicture`s; it is asking for one command used three
+times:
 
 ```tex
 % CYCLES:
@@ -170,11 +170,11 @@ When you do add one, it must look like it belongs:
   `% DELIMITERS:`, …), or open a new all-caps banner in the existing style if the
   group genuinely does not exist yet. Course-specific additions go under
   `% COURSE-SPECIFIC`.
-- **Follow the naming conventions:** `p`-prefix for a parenthesised operator
-  (`\pgcd`, `\pdim`), `of`-suffix for parenthesised function application (`\fof`,
+- **Follow the naming conventions:** `p`-prefix for a parenthesized operator
+  (`\pgcd`, `\pdim`), `of`-suffix for parenthesized function application (`\fof`,
   `\Tof`), `\operatorname{}` rather than `\mathrm{}`, and `\!` before the delimiter
   so there is no gap.
-- **Parameterise the thing that varies and nothing else.** `\cyclegraph{5}`, not
+- **Parameterize the thing that varies and nothing else.** `\cyclegraph{5}`, not
   `\cyclegraph{5}{1cm}{blue}{above}`. Optional arguments with sensible defaults are
   better than four mandatory ones.
 - **Use it everywhere it applies**, including in any existing figure that was doing
@@ -241,6 +241,7 @@ the author must check:
 - **New macros**, with what they do and where they are used.
 - **Anything left `\sorry`**, and what is missing.
 - **Anything you think is wrong** in the surrounding notes, quoted, left unchanged.
+  That list is the input to `/check-correctness`, which is the skill that acts on it.
 - **Ambiguous directives** and the reading you took.
 - The build result.
 

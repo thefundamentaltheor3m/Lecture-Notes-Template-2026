@@ -83,8 +83,8 @@ A definition and what it is for; a single theorem and its proof; one constructio
 one property. **The test is nameability: can you title it in a noun phrase, without
 an "and" that joins two unrelated things?** *Adequacy*, *Soundness*, *Ideals*,
 *Quotients*, *Subnets*, *Cluster Points*, *Tychonoff's Theorem*. "Directed Sets and
-Nets" passes, because nets are defined *in terms of* directed sets; "Ideals and
-Compactness" would not.
+Nets" passes, because nets are defined *in terms of* directed sets; "Colorings and
+Ramsey Numbers" would not.
 
 **Size is emphatically not the test.** The corpus settles this. *Important Definitions
 and First Examples* in LieAlgebrasNotes carries ten subsections — Algebras,

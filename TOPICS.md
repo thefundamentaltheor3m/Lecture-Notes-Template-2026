@@ -83,6 +83,13 @@ Chapters/Appendices/                        placeholder, \input commented out in
 ```
 
 Clear these as real material arrives, not up front, and never one that has acquired
-real content. Three of the four sibling repositories keep an `Appendices/` directory,
-two of those with the `\input` still commented out — so leaving that one standing is
-in keeping rather than an oversight.
+real content.
+
+Three of the four sibling repositories keep an `Appendices/` directory, two of those
+with the `\input` still commented out — so leaving that one standing is in keeping
+rather than an oversight.
+
+`Chapters/1_Intro/todays_lecture.tex` is **not** on that list. It is the lecture
+inbox: infrastructure that stays, gets emptied rather than deleted after each
+`/integrate`, and moves to whichever chapter is current with its `\input` line last
+in that chapter file.

@@ -258,6 +258,21 @@ trigger:
 The build fails loudly (`-halt-on-error`), so a broken document breaks CI rather than
 publishing a broken PDF — compile locally before pushing.
 
+**TeX Live comes from a mirror, and mirrors go down.** The install tries
+`texlive-repo` first and then each of `texlive-fallback-repos` in turn, twice each,
+with a connect timeout — because a single pinned mirror with no fallback once took
+every repository's build down at once. Two things make that failure mode worse than it
+looks and are worth knowing:
+
+- **A cold install is not rare.** GitHub scopes caches per branch, so a tree cached on
+  a pull request branch is invisible to `main`; the first run after any merge is a
+  cold install and always exercises this path.
+- **The job carries `timeout-minutes`**, so a network call that hangs rather than
+  failing is bounded instead of sitting on the six-hour default.
+
+If every mirror is down the build says so explicitly and prints how to point at
+another one — `with: texlive-repo: …` on the caller, no template change needed.
+
 CI does not install `texlive-full`. It installs exactly the packages listed in
 `.github/texlive-packages.txt` into a cached tree, which is why a run takes about a
 minute rather than ten. **Adding a `\usepackage` to `TeX_Setup/packages.tex` therefore

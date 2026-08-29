@@ -54,11 +54,21 @@ on:
         default: '2025'
       texlive-repo:
         description: >-
-          Pinned to a frozen historic release rather than the rolling tlnet, so
-          the cached tree and the repository tlmgr installs from can never fall
-          out of step with each other. Bump both together.
+          Preferred TeX Live mirror. Pinned to a frozen historic release rather
+          than the rolling tlnet, so the cached tree and the repository tlmgr
+          installs from can never fall out of step with each other. Bump this
+          and texlive-year together.
         type: string
         default: 'https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2025/tlnet-final'
+      texlive-fallback-repos:
+        description: >-
+          Mirrors to try, in order, when texlive-repo does not answer —
+          newline- or whitespace-separated. One pinned mirror with no fallback
+          took every repository's build down at once when it stopped
+          responding, since the mirror is shared and a cold install has nowhere
+          else to go. Set to the empty string to disable fallback.
+        type: string
+        default: 'https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2025/tlnet-final'
 
 permissions:
   contents: read
@@ -67,6 +77,10 @@ jobs:
   build:
     name: Compile the PDF
     runs-on: ubuntu-latest
+    # A warm run is ~90 seconds and a cold one a few minutes. This is a
+    # backstop against a hung network call, which without it sits on the
+    # 6-hour default burning Actions minutes with nobody watching.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -132,6 +146,7 @@ jobs:
         if: steps.cache-texlive.outputs.cache-hit != 'true'
         env:
           TEXLIVE_REPO: ${{ inputs.texlive-repo }}
+          TEXLIVE_FALLBACK_REPOS: ${{ inputs.texlive-fallback-repos }}
         run: bash "$TEMPLATE_DIR/.github/scripts/install-texlive.sh"
 
       - name: Put TeX Live on PATH

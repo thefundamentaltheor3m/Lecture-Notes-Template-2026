@@ -87,20 +87,47 @@ respect for the author's mathematics. They do not share a scope.
 | `TOPICS.md` | appends its own entries | owns the file |
 | Ends with | the raw file dissolved | the same content, better arranged |
 
+**The headings the author wrote live are proposals, not facts.** A `\chapter{...}` or
+`\subsection{...}` typed mid-lecture is a decision made at speed, without knowing what
+the rest of the course holds. Start from it — it is the judgment of the person who was
+in the room — but adjudicate it, and say in the report what you decided. A heading that
+*names nothing* is the clearest case: `\subsection{something}`, an untitled heading, a
+`\chapter` with a note attached asking whether it should be one. Those are placeholders
+asking you a question rather than telling you an answer. Answer it — give the heading a
+real title, dissolve it into the heading above, or promote what is under it. Carrying
+`something` through into the notes is the one outcome that is certainly wrong.
+
 **Restructuring what already exists is out of scope here.** Concretely, you may:
 
 - create a new section or subsection for material that has nowhere to go, sized
   according to `ORGANIZATION.md`;
 - adjust a heading title that *this lecture's material* has made inaccurate;
-- add a cross-reference in either direction between new and existing material.
+- add a cross-reference in either direction between new and existing material;
+- **open the chapter the author opened** — but only that one. If this lecture's
+  material arrives under a `\chapter{...}` heading the author wrote live and you agree
+  with it, then building it is part of placing the material, not a separate
+  reorganization: follow **Opening a new chapter** in
+  `.claude/skills/organize/SKILL.md` and do the whole of it — the directory, the
+  chapter file, the `\input` in `main.tex`, the number freed if a placeholder is
+  sitting on it, the staging file moved into the chapter the course is now in, the
+  labels rewritten. A heading you agree with and do not build is worse than one you
+  overrule, because the notes then render it in the middle of the previous chapter. A
+  chapter *you* think is earned, with no heading of the author's behind it, is still
+  `## Structural pressure` and still `/organize`'s.
 
 You may not: move settled material between sections or chapters, split or merge
-existing headings, rename or split a chapter, promote a subsection to a section, or
-renumber anything that was already in place. Those are `/organize`'s, and they are
-out of scope even when they are obviously right, because they renumber results and
-the author has to review the fallout.
+existing headings, rename or split an existing chapter, promote a subsection to a
+section, or renumber anything that was already in place. Those are `/organize`'s, and
+they are out of scope even when they are obviously right, because they renumber
+results and the author has to review the fallout.
 
-When you see one — a chapter whose title stopped describing its contents three
+`## Structural pressure` is for what you **noticed and were not allowed to fix** — not
+for the housekeeping your own placements caused. A directory number left doubly
+claimed, an `\input` not moved, a staging file stranded in last week's chapter: those
+follow from what this run did, they are mechanical, and nobody else is coming for them.
+Filing one instead of doing it is how a half-built structure survives several passes.
+
+When you see a real one — a chapter whose title stopped describing its contents three
 lectures ago, a section doing the work of three —
 **record it and recommend `/organize`**. Note it under a `## Structural pressure`
 heading in `TOPICS.md` and raise it in the report. A wedged-in placement that you have

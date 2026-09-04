@@ -243,3 +243,14 @@ Because these costs are real, **`/integrate` does not restructure**. It may crea
 section or subsection for material that has nowhere to go, and it may adjust a title
 that its new material has made inaccurate — nothing else. Everything beyond that is
 `/organize`'s, and `/organize` proposes before it moves.
+
+**One exception, and it is narrow: the chapter the author opened themselves.** A
+`\chapter{...}` heading written live, mid-lecture, is a structural decision the author
+has already taken; `/integrate` adjudicates it like any other live heading, and if it
+agrees, it *builds* it — directory, chapter file, `\input` in `main.tex`, the number
+freed if a placeholder is holding it, the staging file moved into the chapter the
+course is now in, labels rewritten. The procedure is **Opening a new chapter** in
+`.claude/skills/organize/SKILL.md`, which owns the mechanics for both skills. Agreeing
+with such a heading and leaving it unbuilt is not caution: it renders the new chapter
+as the tail of the old one. A chapter that only the *skill* thinks is earned is a
+different matter, and stays `/organize`'s.

@@ -1,6 +1,6 @@
 ---
 name: organize
-description: Refactor the chapter, section and subsection structure of these lecture notes so that what is already written sits where it belongs, and maintain TOPICS.md as the record of that structure. Use when the notes have outgrown or drifted from their current arrangement — a section doing the work of three, a chapter whose title no longer describes its contents, material in the wrong place, a heading level that should not exist — or when TOPICS.md needs rebuilding. Triggers on "/organize", "organize the notes", "reorganize the chapters", "restructure this", "sort out TOPICS.md". Not for absorbing a new lecture: that is /integrate.
+description: Refactor the chapter, section and subsection structure of these lecture notes so that what is already written sits where it belongs, and maintain TOPICS.md as the record of that structure. Use when the notes have outgrown or drifted from their current arrangement — a section doing the work of three, a chapter whose title no longer describes its contents, material in the wrong place, a heading level that should not exist — or when TOPICS.md needs rebuilding. Also owns the mechanics of opening a new chapter — creating its directory and chapter file, moving the section files and the staging file into it, rewriting the \input lines in main.tex and the Ch<N> label prefixes. Triggers on "/organize", "organize the notes", "reorganize the chapters", "restructure this", "open a new chapter", "sort out TOPICS.md". Not for absorbing a new lecture: that is /integrate.
 ---
 
 # Organising the notes
@@ -129,6 +129,10 @@ states:
 - for each move: what content, from where, to where, and which finding it answers;
 - every heading created, deleted, promoted or demoted, with its title;
 - every file created, renamed or deleted;
+- if a chapter is being opened, renumbered or renamed: its number, its directory, the
+  section files moving into it, any placeholder directory it displaces, where the
+  staging file ends up, and the label prefixes that change — see
+  [Opening a new chapter](#opening-a-new-chapter) for what that commits you to;
 - every renumbering the move causes, and every `\Cref` that will need checking;
 - the connecting prose to be rewritten, with a sentence on what each passage will
   now have to do — a section that acquires a new neighbor usually needs its opening
@@ -172,7 +176,8 @@ asked you to rename is churn that shows up in the diff and helps nobody.
 becomes `1_3_<Abbrev>.tex`, and its `\input` moves with it. Use `git mv` so the
 rename is visible in the diff rather than appearing as a delete plus an add. Quote
 paths: some directory names contain spaces. Chapter 1's directory stays `1_Intro`
-regardless of the chapter's title — see `ORGANIZATION.md`.
+regardless of the chapter's title — see `ORGANIZATION.md`. Opening a chapter is more
+than a rename, and has its own procedure below.
 
 **No subsubsections, ever.** If the plan wanted one, the section above it was wrong.
 
@@ -180,6 +185,82 @@ regardless of the chapter's title — see `ORGANIZATION.md`.
 `Chapters/2_Another Chapter/`, `Chapters/Appendices/` — are in scope for this skill
 in a way they are not for `/integrate`, since they are a structural problem. Propose
 clearing them; never clear a file that has acquired real content.
+
+#### Opening a new chapter
+
+A new chapter is not a heading. It is a directory, a chapter file, a line in
+`main.tex`, whatever section files have moved into it, and every label underneath them
+rewritten — and the failure mode is doing the interesting part and leaving the rest.
+That is what strands a `\chapter` heading in the middle of the previous chapter's last
+section, or leaves a directory nothing `\input`s and that therefore renders nowhere,
+or two directories both claiming to be chapter 2. **When the plan opens a chapter, do
+all of the following, in this order.** Read symmetrically, the same procedure
+renumbers or renames an existing one.
+
+Let `<N>` be the number the new chapter takes and `<Abbrev>` the short CamelCase or
+Snake_Case abbreviation of its title, per `ORGANIZATION.md`.
+
+1. **Free the number first.** No two directories under `Chapters/` may carry the same
+   `<N>_` prefix. If a template placeholder is sitting on it — `Chapters/2_Another
+   Chapter/` is the usual culprit — settle that before creating anything: `git mv` the
+   placeholder to the next free number, renaming its chapter and section files and its
+   `\input` line in `main.tex` to match, or clear it outright if the author has
+   confirmed nothing is planned for it. Renumbering a placeholder needs no approval —
+   nothing references it and its content does not change.
+
+2. **Create the directory and the chapter file.**
+   `Chapters/<N>_<Abbrev>/<N>_<Abbrev>.tex`, holding `\chapter{<Title>}` with
+   `\label{Ch<N>:CH}`, `\thispagestyle{empty}`, the chapter's intro prose, any
+   chapter-wide `boxnotation` or `boxconvention`, and then one `\input` per section in
+   reading order. Nothing else lives in a chapter file.
+
+3. **Move the sections that belong to it, with `git mv`.** A section moving out of
+   chapter `<M>` goes from `<M>_<K>_<Topic>.tex` to `<N>_<J>_<Topic>.tex`, `<J>` being
+   its position in the new chapter's reading order; close the gap it leaves by
+   renumbering the sections that stay, so neither chapter has a hole in its numbering.
+   Use `git mv` rather than a copy and a delete — the rename is the reviewable part of
+   the diff — and quote every path, because `Chapters/2_Another Chapter/` has a space
+   in it. **There may be no sections to move**: a chapter opened for material that is
+   about to be written into it starts empty, and steps 1, 2, 4, 5 and 6 are still all
+   of the work.
+
+4. **Rewrite the `\input` lines — all three sets.** The donor chapter file loses the
+   lines for what left and keeps the rest in reading order; the new chapter file gains
+   them; `main.tex` gains `\input{Chapters/<N>_<Abbrev>/<N>_<Abbrev>.tex}` in chapter
+   order, above the commented-out placeholder chapters and the appendices rather than
+   below them. **The order of the `\input`s in `main.tex` is what actually numbers the
+   chapters**, so a mismatch between a directory's `<N>_` prefix and its position there
+   is a bug even though it compiles. An `\input` may omit the `.tex`, so grep for the
+   stem rather than the filename.
+
+5. **Move the staging file into the chapter the course is now in.** If the notes keep a
+   per-lecture inbox — whatever `/integrate` reads from — and it sits in a chapter
+   directory that is no longer the current one, `git mv` it into the new chapter's
+   directory and move its `\input` line to the end of the new chapter file. Keep the
+   file and its header comment. This one is easy to skip because nothing breaks: the
+   notes still compile, and the next lecture merely previews as the tail of the wrong
+   chapter. **Say in the report that the path changed**, because the author types into
+   it every lecture and may have it open.
+
+6. **Rewrite the labels of everything that moved.** A label carries its chapter, so
+   `Ch<M>:Def:Foo` in a file now under chapter `<N>` becomes `Ch<N>:Def:Foo`. Rewrite
+   the label and every `\Cref` to it in the same pass, repository-wide rather than only
+   in the files that moved, then grep for the old prefix to confirm none survives. This
+   is the step that breaks the build when it is done by halves.
+
+7. **Record the chapter when you rebuild `TOPICS.md`** in step 6 of the skill's
+   procedure, below: the chapter, its directory, what moved into it and from where,
+   and — if it was opened at a heading the author wrote live — that fact and the words
+   they wrote, which are the justification for the bet. `ORGANIZATION.md` is explicit
+   that a chapter *is* a bet on where the course is going, so the reason for opening it
+   belongs on the record beside it.
+
+**Steps 1 and 5 are not `## Structural pressure`.** That heading is for what a run
+*noticed and was not allowed to fix*. A directory collision and a stranded staging file
+caused by a chapter this very run opened are neither: they are consequences of your
+own move, they are mechanical, and nobody else is coming for them. Filing them instead
+of doing them is how a half-opened chapter survives three passes. The test is
+authorship — if the run before yours would not have had to fix it, it is yours.
 
 ### 6. Rebuild TOPICS.md
 
@@ -201,12 +282,27 @@ clearing them; never clear a file that has acquired real content.
    is a pure move. `git diff --stat` should show a lot of renames and few
    modifications outside titles and bridging prose. This is the check that catches
    the failure mode of this skill, which is rewriting while rearranging.
-3. **Build** — `latexmk -pdf -outdir=TeX_Outputs main.tex`. Read the log for
+3. **Chapter plumbing**, whenever a chapter was opened, renumbered or renamed:
+
+   ```bash
+   ls Chapters | sed -n 's/^\([0-9][0-9]*\)_.*/\1/p' | sort | uniq -d
+   grep -rho '\\input{[^}]*}' main.tex Chapters | sed 's/.*{\(.*\)}/\1/' | sort
+   grep -rn 'label{Ch[0-9]*:' Chapters
+   ```
+
+   The first prints any number claimed by two directories at once, and must print
+   nothing. The second is every `\input` path in the document: check that each one
+   resolves — with or without the `.tex` — and that every `.tex` file under
+   `Chapters/` appears in it or is deliberately unreferenced, catching both a dangling
+   `\input` and the orphaned file. The third is every label prefix: read each against
+   the directory its file sits in, and against that chapter's position in `main.tex`.
+   Then find the staging file and confirm it is in the current chapter.
+4. **Build** — `latexmk -pdf -outdir=TeX_Outputs main.tex`. Read the log for
    undefined references and duplicate labels: those are the symptoms of a botched
    move. Grep for `\Cref`s to anything that moved.
-4. **Numbering** — check the rendered ToC against the outline in `TOPICS.md`, and
+5. **Numbering** — check the rendered ToC against the outline in `TOPICS.md`, and
    spot-check that results renumbered the way the plan said they would.
-5. **Refresh `TeX_Outputs/main.pdf`** — it is tracked deliberately.
+6. **Refresh `TeX_Outputs/main.pdf`** — it is tracked deliberately.
 
 ### 8. Branch, commit, PR
 
@@ -243,6 +339,9 @@ https://github.com/thefundamentaltheor3m/<REPO>/compare/main...organize/<short-d
 - **The moves**: what went where, and which finding each one answers.
 - **What was left alone**, including anything off-norm you decided to tolerate and
   the condition that would change your mind.
+- **Any chapter opened, renumbered or renamed**: its directory, everything that moved
+  into it and out of what, the placeholder it displaced if it displaced one, and where
+  the staging file ended up. That is not a detail — the author types into that path.
 - **Renumbering**: what changed number, and every `\Cref` you checked.
 - **Prose you rewrote** — titles, bridges, intros. These are the only places where
   words changed, so they are what the author needs to read.

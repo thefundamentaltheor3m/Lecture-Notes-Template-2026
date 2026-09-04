@@ -143,7 +143,8 @@ The two structural skills divide as follows, and the division matters because
 restructuring renumbers results:
 
 - **`/integrate`** (`.claude/skills/integrate/`) absorbs one lecture's raw notes. It
-  may create a heading for material that has nowhere to go, but it does **not**
+  may create a heading for material that has nowhere to go, and it builds the chapter
+  when the author opened one live and it agrees, but it does **not** otherwise
   restructure what is already written. When it sees that the structure has stopped
   fitting, it records the pressure in `TOPICS.md` and recommends `/organize`.
 - **`/organize`** (`.claude/skills/organize/`) refactors the existing chapter,
@@ -179,7 +180,7 @@ The five skills divide by how much latitude each has:
 | --- | --- | --- |
 | `/address-comments` | `% [CLAUDE]` directives | do exactly what the directive says |
 | `/fill-sorries` | `\sorry` markers | work out the mathematics; decide and report |
-| `/integrate` | one lecture's raw notes | place new material; never restructure |
+| `/integrate` | one lecture's raw notes | place new material; restructure only to build the chapter the author opened |
 | `/organize` | the notes as they stand | rearrange only; add and delete nothing |
 | `/americanise` | British spellings | spelling only; never the mathematics |
 

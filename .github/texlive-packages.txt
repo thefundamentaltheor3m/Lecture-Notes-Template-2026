@@ -91,7 +91,7 @@ booktabs
 float
 wrapfig
 caption   # provides: subcaption
-graphics  # provides: graphicx
+graphics  # provides: graphicx, color
 graphics-cfg
 graphics-def
 
